@@ -124,6 +124,6 @@ EXPOSE 8110
 
 WORKDIR "/home/asymptote/asymptote-server"
 
-USER 1000
+#USER 1000
 
 CMD [ "make run" ]

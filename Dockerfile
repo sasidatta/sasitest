@@ -7,6 +7,7 @@ FROM ubuntu:20.04
 
 ENV NODE_VERSION 16.6.0
 ENV ASY_VERSION 2.77
+
 RUN apt-get update -y
 RUN apt-get install -yq apt-utils
 RUN apt-get install curl gpg xz-utils git -y
@@ -80,7 +81,7 @@ RUN apt-get install -y zlib1g-dev
 
 RUN cp /etc/apt/sources.list /etc/apt/sources.list~
 
-RUN mkdir /vectorgraphics
+RUN mkdir -p /vectorgraphics/freeglut
 
 
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
@@ -103,9 +104,42 @@ RUN set -ex \
     && tar -xzf "asymptote-$ASY_VERSION.src.tgz" -C /vectorgraphics --strip-components=1 \
     && rm "asymptote-$ASY_VERSION.src.tgz"
 
-RUN cd /vectorgraphics && ./configure \
-    && make clean \
+RUN curl -SLO "https://github.com/ivmai/bdwgc/releases/download/v8.0.4/gc-8.0.4.tar.gz"
+
+RUN curl -SLO "http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-7.6.10.tar.gz"
+
+RUN mv gc-8.0.4.tar.gz /vectorgraphics
+RUN mv libatomic_ops-7.6.10.tar.gz /vectorgraphics
+
+RUN set -ex \
+    && curl -SLO "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9550/ghostscript-9.55.0-linux-x86_64.tgz" \
+    && tar -xzf "ghostscript-9.55.0-linux-x86_64.tgz" -C /vectorgraphics --strip-components=1 \
+    && rm "ghostscript-9.55.0-linux-x86_64.tgz" 
+
+ENV ASYMPTOTE_GS /vectorgraphics/ghostscript-9.55.0-linux-x86_64/gs-9550-linux-x86_64
+
+RUN export ASYMPTOTE_GS=/vectorgraphics/ghostscript-9.55.0-linux-x86_64/gs-9550-linux-x86_64
+
+RUN set -ex \
+    && curl -SLO "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9550/ghostscript-9.55.0-linux-x86_64.tgz" \
+    && tar -xzf "ghostscript-9.55.0-linux-x86_64.tgz" -C /vectorgraphics --strip-components=1 \
+    && rm "ghostscript-9.55.0-linux-x86_64.tgz" 
+
+RUN set -ex \
+    && curl -SLO "https://prdownloads.sourceforge.net/freeglut/freeglut-3.2.1.tar.gz" \
+    && tar -xzf "freeglut-3.2.1.tar.gz" -C /vectorgraphics/freeglut --strip-components=1 \
+    && rm "freeglut-3.2.1.tar.gz"
+
+
+RUN cd /vectorgraphics/freeglut && cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_FLAGS=-fcommon . \
     && make \
-    && make install 
+    && make install
+
+RUN cd /vectorgraphics && ./configure \
+    && make clean 
+
+RUN cd /vectorgraphics && make
+
+RUN cd /vectorgraphics && make install 
 
 RUN asy --version

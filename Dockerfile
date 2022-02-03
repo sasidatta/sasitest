@@ -6,14 +6,15 @@ FROM ubuntu:20.04
 #  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 ENV NODE_VERSION 16.6.0
-ENV ASY_VERSION 2.70
+ENV ASY_VERSION 2.77
 RUN apt-get update -y
 RUN apt-get install -yq apt-utils
-RUN apt-get install curl -y
-RUN apt-get install gpg -y
-RUN apt-get install xz-utils -y
-RUN apt-get install git -y
-RUN apt-get install make -y
+RUN apt-get install curl gpg xz-utils git -y
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+RUN apt-get install cmake -y
+
+RUN apt-get install libx11-dev mesa-common-dev libglu1-mesa-dev libxrandr-dev libxi-dev zlib1g-dev -y 
+RUN apt-get install texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texinfo 
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -81,7 +82,6 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list~
 
 RUN mkdir /vectorgraphics
 
-RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
 
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
@@ -108,22 +108,4 @@ RUN cd /vectorgraphics && ./configure \
     && make \
     && make install 
 
-RUN git clone https://github.com/vectorgraphics/asymptote-server.git
-
-RUN mv asymptote-server /home/asymptote \
-#  && git clone https://github.com/vectorgraphics/asymptote-server.git \
-  && chown -R asymptote /home/asymptote/asymptote-server \
-  && cd /home/asymptote/asymptote-server \
-  && npm i
-
-RUN cd /home/asymptote/asymptote-server \
-  && sed -i s/80/8110/g server.js \
-  && make 
-
-EXPOSE 8110
-
-WORKDIR "/home/asymptote/asymptote-server"
-
-#USER 1000
-
-CMD [ "make run" ]
+RUN asy --version

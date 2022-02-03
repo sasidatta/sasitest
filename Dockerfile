@@ -116,9 +116,9 @@ RUN set -ex \
     && tar -xzf "ghostscript-9.55.0-linux-x86_64.tgz" -C /vectorgraphics --strip-components=1 \
     && rm "ghostscript-9.55.0-linux-x86_64.tgz" 
 
-ENV ASYMPTOTE_GS /vectorgraphics/ghostscript-9.55.0-linux-x86_64/gs-9550-linux-x86_64
+ENV ASYMPTOTE_GS /vectorgraphics/gs-9550-linux-x86_64
 
-RUN export ASYMPTOTE_GS=/vectorgraphics/ghostscript-9.55.0-linux-x86_64/gs-9550-linux-x86_64
+RUN export ASYMPTOTE_GS=/vectorgraphics/gs-9550-linux-x86_64
 
 RUN set -ex \
     && curl -SLO "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9550/ghostscript-9.55.0-linux-x86_64.tgz" \

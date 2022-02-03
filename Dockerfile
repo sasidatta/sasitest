@@ -14,7 +14,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
 RUN apt-get install cmake -y
 
 RUN apt-get install libx11-dev mesa-common-dev libglu1-mesa-dev libxrandr-dev libxi-dev zlib1g-dev -y 
-RUN apt-get install texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texinfo 
+RUN apt-get install texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texinfo -y
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \

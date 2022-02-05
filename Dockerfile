@@ -143,3 +143,23 @@ RUN cd /vectorgraphics && make
 RUN cd /vectorgraphics && make install 
 
 RUN asy --version
+
+RUN git clone https://github.com/vectorgraphics/asymptote-server.git
+
+RUN mv asymptote-server /home/asymptote \
+  && chown -R asymptote /home/asymptote/asymptote-server \
+  && cd /home/asymptote/asymptote-server \
+  && npm i
+  
+RUN cd /home/asymptote/asymptote-server \
+  && sed -i s/80/8110/g server.js \
+  && make 
+  
+EXPOSE 8110
+
+WORKDIR "/home/asymptote/asymptote-server"
+
+USER 1000
+
+CMD [ "make run" ]
+

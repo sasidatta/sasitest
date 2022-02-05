@@ -160,4 +160,4 @@ RUN sed -i s/80/8110/g server.js \
   
 EXPOSE 8110
 
-CMD [ "make run" ]
+CMD [ "make", "run" ]
